@@ -1,25 +1,39 @@
-# Example Terraform module
+<!-- BEGIN_TF_DOCS -->
+# Fortigate Interface configuration module
 
-Terraform module which is an example.
-
-
-## Usage
-```hcl
-module "example" {
-  source        = "github.com/sncs-uk/example-module"
-  parameter     = "value"
-  do_something  = true
-}
-```
+This terraform module configures interfaces, zones & hardware
+switches on a firewall
 
 ## Requirements
-| Name | Version |
-|------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.0 |
-| <a name="requirement_example"></a> [example](#requirement\_example) | >= 1.23 |
+
+No requirements.
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_example"></a> [example](#provider\_example) | >= 1.23 |
+| <a name="provider_fortios"></a> [fortios](#provider\_fortios) | n/a |
+
+## Modules
+
+| Name | Source | Version |
+|------|--------|---------|
+| <a name="module_hardware_switch"></a> [hardware\_switch](#module\_hardware\_switch) | github.com/sncs-uk/terraform-fortigate-hardware-switch | n/a |
+
+## Resources
+
+| Name | Type |
+|------|------|
+| [fortios_system_interface.interfaces](https://registry.terraform.io/providers/fortinetdev/fortios/latest/docs/resources/system_interface) | resource |
+| [fortios_system_zone.zones](https://registry.terraform.io/providers/fortinetdev/fortios/latest/docs/resources/system_zone) | resource |
+
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| <a name="input_config_path"></a> [config\_path](#input\_config\_path) | Path to base configuration directory | `string` | n/a | yes |
+
+## Outputs
+
+No outputs.
+<!-- END_TF_DOCS -->
