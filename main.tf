@@ -13,7 +13,7 @@ terraform {
 }
 
 locals {
-  interface_yaml = yamldecode(file("${var.config_path}/config/interfaces.yaml"))
+  interface_yaml = yamldecode(file("${var.config_path}/interfaces.yaml"))
 }
 
 resource fortios_system_interface interfaces {
