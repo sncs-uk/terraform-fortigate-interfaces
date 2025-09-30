@@ -36,6 +36,23 @@ resource fortios_system_interface interfaces {
   role              = try(each.value.role, null)
   allowaccess       = join(" ", try(each.value.allowaccess, try(each.value.role, null) == "wan" ? [] : ["ping"]))
 
+  secondary_ip      = length(try(each.value.secondaryip, [])) > 0 ? "enable" : "disable"
+
+  dynamic secondaryip {
+    for_each        = { for secip in try(each.value.secondaryip, []) : secip.ip => secip }
+    content {
+      ip                = secondaryip.value.ip
+      id                = try(secondaryip.value.id, null)
+      secip_relay_ip    = try(secondaryip.value.secip_relay_ip, null)
+      allowaccess       = join(" ", try(secondaryip.value.allowaccess, try(each.value.role, null) == "wan" ? [] : ["ping"]))
+      gwdetect          = try(secondaryip.value.gwdetect, null)
+      ping_serv_status  = try(secondaryip.value.ping_serv_status, null)
+      detectserver      = try(secondaryip.value.detectserver, null)
+      detectprotocol    = try(secondaryip.value.detectprotocol, null)
+      ha_priority       = try(secondaryip.value.ha_priority, null)
+    }
+  }
+
   ipv6 {
     ip6_mode                  = try(each.value.ip6_mode, null)
     dhcp6_prefix_delegation   = try(each.value.dhcp6_prefix_delegation, false) ? "enable" : "disable"
