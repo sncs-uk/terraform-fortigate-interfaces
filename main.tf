@@ -17,7 +17,7 @@ locals {
 }
 
 resource fortios_system_interface interfaces {
-  for_each          = { for name, interface in try(local.interface_yaml.interfaces, []) : name => interface}
+  for_each          = { for name, interface in try(local.interface_yaml[var.interface_key], []) : name => interface}
   depends_on        = [ module.hardware_switch ]
   lifecycle {
     ignore_changes = [ cli_conn_status, ipv6[0].cli_conn6_status ]

@@ -32,6 +32,7 @@ No requirements.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_config_path"></a> [config\_path](#input\_config\_path) | Path to base configuration directory | `string` | n/a | yes |
+| <a name="input_interface_key"></a> [interface\_key](#input\_interface\_key) | Key within the configuration path to use for the interface configuration | `string` | `"interfaces"` | no |
 
 ## Outputs
 
