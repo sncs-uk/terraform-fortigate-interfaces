@@ -111,7 +111,7 @@ resource "fortios_system_zone" "zones" {
 
 module "hardware_switch" {
   for_each     = { for name, switch in try(local.interface_yaml.switches, []) : name => switch }
-  source       = "github.com/sncs-uk/terraform-fortigate-hardware-switch?ref=1.0.0"
+  source       = "github.com/sncs-uk/terraform-fortigate-hardware-switch?ref=v1.0.0"
   name         = each.key
   ports        = try(each.value.ports, null)
   vdom         = try(each.value.vdom, null)
