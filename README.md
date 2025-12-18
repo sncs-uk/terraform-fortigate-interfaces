@@ -21,7 +21,7 @@ switches on a firewall
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_hardware_switch"></a> [hardware\_switch](#module\_hardware\_switch) | github.com/sncs-uk/terraform-fortigate-hardware-switch | v1.0.0 |
+| <a name="module_hardware_switch"></a> [hardware\_switch](#module\_hardware\_switch) | github.com/sncs-uk/terraform-fortigate-hardware-switch | v1.0.1 |
 
 ## Resources
 
