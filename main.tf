@@ -14,350 +14,345 @@ terraform {
   }
 }
 
-locals {
-  interface_yaml = yamldecode(file("${var.config_path}/interfaces.yaml"))
-}
-
 resource "fortios_system_interface" "interfaces" {
-  for_each   = { for name, interface in try(local.interface_yaml[var.interface_key], []) : name => interface }
-  depends_on = [module.hardware_switch]
+  for_each = { for interface in var.interfaces : interface.name => interface }
   lifecycle {
     ignore_changes = [cli_conn_status, ipv6[0].cli_conn6_status]
   }
 
-  name = each.key
-  vdom = each.value.vdom
-
-  vrf                                        = try(each.value.vrf, null)
-  cli_conn_status                            = try(each.value.cli_conn_status, null)
-  fortilink                                  = try(each.value.fortilink, null)
-  switch_controller_source_ip                = try(each.value.switch_controller_source_ip, null)
-  mode                                       = try(each.value.mode, null)
-  distance                                   = try(each.value.distance, null)
-  priority                                   = try(each.value.priority, null)
-  dhcp_relay_interface_select_method         = try(each.value.dhcp_relay_interface_select_method, null)
-  dhcp_relay_interface                       = try(each.value.dhcp_relay_interface, null)
-  dhcp_relay_vrf_select                      = try(each.value.dhcp_relay_vrf_select, null)
-  dhcp_broadcast_flag                        = try(each.value.dhcp_broadcast_flag, null)
-  dhcp_relay_service                         = try(each.value.dhcp_relay_service, null)
-  dhcp_relay_ip                              = try(each.value.dhcp_relay_ip, null)
-  dhcp_relay_source_ip                       = try(each.value.dhcp_relay_source_ip, null)
-  dhcp_relay_circuit_id                      = try(each.value.dhcp_relay_circuit_id, null)
-  dhcp_relay_link_selection                  = try(each.value.dhcp_relay_link_selection, null)
-  dhcp_relay_request_all_server              = try(each.value.dhcp_relay_request_all_server, null)
-  dhcp_relay_allow_no_end_option             = try(each.value.dhcp_relay_allow_no_end_option, null)
-  dhcp_relay_type                            = try(each.value.dhcp_relay_type, null)
-  dhcp_smart_relay                           = try(each.value.dhcp_smart_relay, null)
-  dhcp_relay_agent_option                    = try(each.value.dhcp_relay_agent_option, null)
-  dhcp_classless_route_addition              = try(each.value.dhcp_classless_route_addition, null)
-  management_ip                              = try(each.value.management_ip, null)
-  ip                                         = try(each.value.ip, null)
-  allowaccess                                = join(" ", try(each.value.allowaccess, try(each.value.role, null) == "wan" ? [] : ["ping"]))
-  gwdetect                                   = try(each.value.gwdetect, null)
-  ping_serv_status                           = try(each.value.ping_serv_status, null)
-  detectserver                               = try(each.value.detectserver, null)
-  detectprotocol                             = try(each.value.detectprotocol, null)
-  ha_priority                                = try(each.value.ha_priority, null)
-  fail_detect                                = try(each.value.fail_detect, null)
-  fail_detect_option                         = try(each.value.fail_detect_option, null)
-  fail_alert_method                          = try(each.value.fail_alert_method, null)
-  fail_action_on_extender                    = try(each.value.fail_action_on_extender, null)
-  dhcp_client_identifier                     = try(each.value.dhcp_client_identifier, null)
-  dhcp_renew_time                            = try(each.value.dhcp_renew_time, null)
-  ipunnumbered                               = try(each.value.ipunnumbered, null)
-  username                                   = try(each.value.username, null)
-  pppoe_egress_cos                           = try(each.value.pppoe_egress_cos, null)
-  pppoe_unnumbered_negotiate                 = try(each.value.pppoe_unnumbered_negotiate, null)
-  password                                   = try(each.value.password, null)
-  idle_timeout                               = try(each.value.idle_timeout, null)
-  detected_peer_mtu                          = try(each.value.detected_peer_mtu, null)
-  disc_retry_timeout                         = try(each.value.disc_retry_timeout, null)
-  padt_retry_timeout                         = try(each.value.padt_retry_timeout, null)
-  service_name                               = try(each.value.service_name, null)
-  ac_name                                    = try(each.value.ac_name, null)
-  lcp_echo_interval                          = try(each.value.lcp_echo_interval, null)
-  lcp_max_echo_fails                         = try(each.value.lcp_max_echo_fails, null)
-  defaultgw                                  = try(each.value.defaultgw, null)
-  dns_server_override                        = try(each.value.dns_server_override, null)
-  dns_server_protocol                        = try(each.value.dns_server_protocol, null)
-  auth_type                                  = try(each.value.auth_type, null)
-  pptp_client                                = try(each.value.pptp_client, null)
-  pptp_user                                  = try(each.value.pptp_user, null)
-  pptp_password                              = try(each.value.pptp_password, null)
-  pptp_server_ip                             = try(each.value.pptp_server_ip, null)
-  pptp_auth_type                             = try(each.value.pptp_auth_type, null)
-  pptp_timeout                               = try(each.value.pptp_timeout, null)
-  arpforward                                 = try(each.value.arpforward, null)
-  ndiscforward                               = try(each.value.ndiscforward, null)
-  broadcast_forward                          = try(each.value.broadcast_forward, null)
-  bfd                                        = try(each.value.bfd, null)
-  bfd_desired_min_tx                         = try(each.value.bfd_desired_min_tx, null)
-  bfd_detect_mult                            = try(each.value.bfd_detect_mult, null)
-  bfd_required_min_rx                        = try(each.value.bfd_required_min_rx, null)
-  l2forward                                  = try(each.value.l2forward, null)
-  icmp_send_redirect                         = try(each.value.icmp_send_redirect, null)
-  icmp_accept_redirect                       = try(each.value.icmp_accept_redirect, null)
-  reachable_time                             = try(each.value.reachable_time, null)
-  vlanforward                                = try(each.value.vlanforward, null)
-  stpforward                                 = try(each.value.stpforward, null)
-  stpforward_mode                            = try(each.value.stpforward_mode, null)
-  ips_sniffer_mode                           = try(each.value.ips_sniffer_mode, null)
-  ident_accept                               = try(each.value.ident_accept, null)
-  ipmac                                      = try(each.value.ipmac, null)
-  subst                                      = try(each.value.subst, null)
-  macaddr                                    = try(each.value.macaddr, null)
-  virtual_mac                                = try(each.value.virtual_mac, null)
-  substitute_dst_mac                         = try(each.value.substitute_dst_mac, null)
-  speed                                      = try(each.value.speed, null)
-  status                                     = try(each.value.status, null)
-  netbios_forward                            = try(each.value.netbios_forward, null)
-  wins_ip                                    = try(each.value.wins_ip, null)
+  name                                       = each.value.name
+  vdom                                       = each.value.vdom
+  vrf                                        = each.value.vrf
+  cli_conn_status                            = each.value.cli_conn_status
+  fortilink                                  = each.value.fortilink
+  switch_controller_source_ip                = each.value.switch_controller_source_ip
+  mode                                       = each.value.mode
+  distance                                   = each.value.distance
+  priority                                   = each.value.priority
+  dhcp_relay_interface_select_method         = each.value.dhcp_relay_interface_select_method
+  dhcp_relay_interface                       = each.value.dhcp_relay_interface
+  dhcp_relay_vrf_select                      = each.value.dhcp_relay_vrf_select
+  dhcp_broadcast_flag                        = each.value.dhcp_broadcast_flag
+  dhcp_relay_service                         = each.value.dhcp_relay_service
+  dhcp_relay_ip                              = each.value.dhcp_relay_ip
+  dhcp_relay_source_ip                       = each.value.dhcp_relay_source_ip
+  dhcp_relay_circuit_id                      = each.value.dhcp_relay_circuit_id
+  dhcp_relay_link_selection                  = each.value.dhcp_relay_link_selection
+  dhcp_relay_request_all_server              = each.value.dhcp_relay_request_all_server
+  dhcp_relay_allow_no_end_option             = each.value.dhcp_relay_allow_no_end_option
+  dhcp_relay_type                            = each.value.dhcp_relay_type
+  dhcp_smart_relay                           = each.value.dhcp_smart_relay
+  dhcp_relay_agent_option                    = each.value.dhcp_relay_agent_option
+  dhcp_classless_route_addition              = each.value.dhcp_classless_route_addition
+  management_ip                              = each.value.management_ip
+  ip                                         = each.value.ip
+  allowaccess                                = each.value.allowaccess
+  gwdetect                                   = each.value.gwdetect
+  ping_serv_status                           = each.value.ping_serv_status
+  detectserver                               = each.value.detectserver
+  detectprotocol                             = each.value.detectprotocol
+  ha_priority                                = each.value.ha_priority
+  fail_detect                                = each.value.fail_detect
+  fail_detect_option                         = each.value.fail_detect_option
+  fail_alert_method                          = each.value.fail_alert_method
+  fail_action_on_extender                    = each.value.fail_action_on_extender
+  dhcp_client_identifier                     = each.value.dhcp_client_identifier
+  dhcp_renew_time                            = each.value.dhcp_renew_time
+  ipunnumbered                               = each.value.ipunnumbered
+  username                                   = each.value.username
+  pppoe_egress_cos                           = each.value.pppoe_egress_cos
+  pppoe_unnumbered_negotiate                 = each.value.pppoe_unnumbered_negotiate
+  password                                   = each.value.password
+  idle_timeout                               = each.value.idle_timeout
+  detected_peer_mtu                          = each.value.detected_peer_mtu
+  disc_retry_timeout                         = each.value.disc_retry_timeout
+  padt_retry_timeout                         = each.value.padt_retry_timeout
+  service_name                               = each.value.service_name
+  ac_name                                    = each.value.ac_name
+  lcp_echo_interval                          = each.value.lcp_echo_interval
+  lcp_max_echo_fails                         = each.value.lcp_max_echo_fails
+  defaultgw                                  = each.value.defaultgw
+  dns_server_override                        = each.value.dns_server_override
+  dns_server_protocol                        = each.value.dns_server_protocol
+  auth_type                                  = each.value.auth_type
+  pptp_client                                = each.value.pptp_client
+  pptp_user                                  = each.value.pptp_user
+  pptp_password                              = each.value.pptp_password
+  pptp_server_ip                             = each.value.pptp_server_ip
+  pptp_auth_type                             = each.value.pptp_auth_type
+  pptp_timeout                               = each.value.pptp_timeout
+  arpforward                                 = each.value.arpforward
+  ndiscforward                               = each.value.ndiscforward
+  broadcast_forward                          = each.value.broadcast_forward
+  bfd                                        = each.value.bfd
+  bfd_desired_min_tx                         = each.value.bfd_desired_min_tx
+  bfd_detect_mult                            = each.value.bfd_detect_mult
+  bfd_required_min_rx                        = each.value.bfd_required_min_rx
+  l2forward                                  = each.value.l2forward
+  icmp_send_redirect                         = each.value.icmp_send_redirect
+  icmp_accept_redirect                       = each.value.icmp_accept_redirect
+  reachable_time                             = each.value.reachable_time
+  vlanforward                                = each.value.vlanforward
+  stpforward                                 = each.value.stpforward
+  stpforward_mode                            = each.value.stpforward_mode
+  ips_sniffer_mode                           = each.value.ips_sniffer_mode
+  ident_accept                               = each.value.ident_accept
+  ipmac                                      = each.value.ipmac
+  subst                                      = each.value.subst
+  macaddr                                    = each.value.macaddr
+  virtual_mac                                = each.value.virtual_mac
+  substitute_dst_mac                         = each.value.substitute_dst_mac
+  speed                                      = each.value.speed
+  status                                     = each.value.status
+  netbios_forward                            = each.value.netbios_forward
+  wins_ip                                    = each.value.wins_ip
   type                                       = each.value.type
-  dedicated_to                               = try(each.value.dedicated_to, null)
-  trust_ip_1                                 = try(each.value.trust_ip_1, null)
-  trust_ip_2                                 = try(each.value.trust_ip_2, null)
-  trust_ip_3                                 = try(each.value.trust_ip_3, null)
-  trust_ip6_1                                = try(each.value.trust_ip6_1, null)
-  trust_ip6_2                                = try(each.value.trust_ip6_2, null)
-  trust_ip6_3                                = try(each.value.trust_ip6_3, null)
-  mtu_override                               = try(each.value.mtu_override, null)
-  mtu                                        = try(each.value.mtu, null)
-  ring_rx                                    = try(each.value.ring_rx, null)
-  ring_tx                                    = try(each.value.ring_tx, null)
-  wccp                                       = try(each.value.wccp, null)
-  netflow_sampler                            = try(each.value.netflow_sampler, null)
-  netflow_sample_rate                        = try(each.value.netflow_sample_rate, null)
-  netflow_sampler_id                         = try(each.value.netflow_sampler_id, null)
-  sflow_sampler                              = try(each.value.sflow_sampler, null)
-  drop_overlapped_fragment                   = try(each.value.drop_overlapped_fragment, null)
-  drop_fragment                              = try(each.value.drop_fragment, null)
-  scan_botnet_connections                    = try(each.value.scan_botnet_connections, null)
-  src_check                                  = try(each.value.src_check, null)
-  sample_rate                                = try(each.value.sample_rate, null)
-  polling_interval                           = try(each.value.polling_interval, null)
-  sample_direction                           = try(each.value.sample_direction, null)
-  explicit_web_proxy                         = try(each.value.explicit_web_proxy, null)
-  explicit_ftp_proxy                         = try(each.value.explicit_ftp_proxy, null)
-  proxy_captive_portal                       = try(each.value.proxy_captive_portal, null)
-  tcp_mss                                    = try(each.value.tcp_mss, null)
-  mediatype                                  = try(each.value.mediatype, null)
-  inbandwidth                                = try(each.value.inbandwidth, null)
-  outbandwidth                               = try(each.value.outbandwidth, null)
-  egress_shaping_profile                     = try(each.value.egress_shaping_profile, null)
-  ingress_shaping_profile                    = try(each.value.ingress_shaping_profile, null)
-  disconnect_threshold                       = try(each.value.disconnect_threshold, null)
-  spillover_threshold                        = try(each.value.spillover_threshold, null)
-  ingress_spillover_threshold                = try(each.value.ingress_spillover_threshold, null)
-  weight                                     = try(each.value.weight, null)
-  interface                                  = try(each.value.interface, null)
-  external                                   = try(each.value.external, null)
-  vlan_protocol                              = try(each.value.vlan_protocol, null)
-  vlanid                                     = try(each.value.vlanid, null)
-  trunk                                      = try(each.value.trunk, null)
-  forward_domain                             = try(each.value.forward_domain, null)
-  remote_ip                                  = try(each.value.remote_ip, null)
-  lacp_mode                                  = try(each.value.lacp_mode, null)
-  lacp_ha_secondary                          = try(each.value.lacp_ha_secondary, null)
-  lacp_ha_slave                              = try(each.value.lacp_ha_slave, null)
-  system_id_type                             = try(each.value.system_id_type, null)
-  system_id                                  = try(each.value.system_id, null)
-  lacp_speed                                 = try(each.value.lacp_speed, null)
-  min_links                                  = try(each.value.min_links, null)
-  min_links_down                             = try(each.value.min_links_down, null)
-  algorithm                                  = try(each.value.algorithm, null)
-  link_up_delay                              = try(each.value.link_up_delay, null)
-  aggregate_type                             = try(each.value.aggregate_type, null)
-  priority_override                          = try(each.value.priority_override, null)
-  aggregate                                  = try(each.value.aggregate, null)
-  redundant_interface                        = try(each.value.redundant_interface, null)
-  devindex                                   = try(each.value.devindex, null)
-  vindex                                     = try(each.value.vindex, null)
-  switch                                     = try(each.value.switch, null)
-  description                                = try(each.value.description, null)
-  alias                                      = try(each.value.alias, null)
-  security_mode                              = try(each.value.security_mode, null)
-  captive_portal                             = try(each.value.captive_portal, null)
-  security_mac_auth_bypass                   = try(each.value.security_mac_auth_bypass, null)
-  security_ip_auth_bypass                    = try(each.value.security_ip_auth_bypass, null)
-  security_external_web                      = try(each.value.security_external_web, null)
-  security_external_logout                   = try(each.value.security_external_logout, null)
-  replacemsg_override_group                  = try(each.value.replacemsg_override_group, null)
-  security_redirect_url                      = try(each.value.security_redirect_url, null)
-  auth_cert                                  = try(each.value.auth_cert, null)
-  auth_portal_addr                           = try(each.value.auth_portal_addr, null)
-  security_exempt_list                       = try(each.value.security_exempt_list, null)
-  ike_saml_server                            = try(each.value.ike_saml_server, null)
-  stp                                        = try(each.value.stp, null)
-  stp_ha_secondary                           = try(each.value.stp_ha_secondary, null)
-  device_identification                      = try(each.value.device_identification, null)
-  exclude_signatures                         = try(each.value.exclude_signatures, null)
-  device_user_identification                 = try(each.value.device_user_identification, null)
-  device_identification_active_scan          = try(each.value.device_identification_active_scan, null)
-  device_access_list                         = try(each.value.device_access_list, null)
-  device_netscan                             = try(each.value.device_netscan, null)
-  lldp_reception                             = try(each.value.lldp_reception, null)
-  lldp_transmission                          = try(each.value.lldp_transmission, null)
-  lldp_network_policy                        = try(each.value.lldp_network_policy, null)
-  fortiheartbeat                             = try(each.value.fortiheartbeat, null)
-  broadcast_forticlient_discovery            = try(each.value.broadcast_forticlient_discovery, null)
-  endpoint_compliance                        = try(each.value.endpoint_compliance, null)
-  estimated_upstream_bandwidth               = try(each.value.estimated_upstream_bandwidth, null)
-  estimated_downstream_bandwidth             = try(each.value.estimated_downstream_bandwidth, null)
-  measured_upstream_bandwidth                = try(each.value.measured_upstream_bandwidth, null)
-  measured_downstream_bandwidth              = try(each.value.measured_downstream_bandwidth, null)
-  bandwidth_measure_time                     = try(each.value.bandwidth_measure_time, null)
-  monitor_bandwidth                          = try(each.value.monitor_bandwidth, null)
-  vrrp_virtual_mac                           = try(each.value.vrrp_virtual_mac, null)
-  role                                       = try(each.value.role, null)
-  snmp_index                                 = try(each.value.snmp_index, null)
-  secondary_ip                               = length(try(each.value.secondaryip, [])) > 0 ? "enable" : "disable"
-  preserve_session_route                     = try(each.value.preserve_session_route, null)
-  auto_auth_extension_device                 = try(each.value.auto_auth_extension_device, null)
-  ap_discover                                = try(each.value.ap_discover, null)
-  fortilink_stacking                         = try(each.value.fortilink_stacking, null)
-  fortilink_neighbor_detect                  = try(each.value.fortilink_neighbor_detect, null)
-  ip_managed_by_fortiipam                    = try(each.value.ip_managed_by_fortiipam, null)
-  managed_subnetwork_size                    = try(each.value.managed_subnetwork_size, null)
-  fortilink_split_interface                  = try(each.value.fortilink_split_interface, null)
-  internal                                   = try(each.value.internal, null)
-  fortilink_backup_link                      = try(each.value.fortilink_backup_link, null)
-  switch_controller_access_vlan              = try(each.value.switch_controller_access_vlan, null)
-  switch_controller_traffic_policy           = try(each.value.switch_controller_traffic_policy, null)
-  switch_controller_rspan_mode               = try(each.value.switch_controller_rspan_mode, null)
-  switch_controller_netflow_collect          = try(each.value.switch_controller_netflow_collect, null)
-  switch_controller_mgmt_vlan                = try(each.value.switch_controller_mgmt_vlan, null)
-  switch_controller_igmp_snooping            = try(each.value.switch_controller_igmp_snooping, null)
-  switch_controller_igmp_snooping_proxy      = try(each.value.switch_controller_igmp_snooping_proxy, null)
-  switch_controller_igmp_snooping_fast_leave = try(each.value.switch_controller_igmp_snooping_fast_leave, null)
-  switch_controller_dhcp_snooping            = try(each.value.switch_controller_dhcp_snooping, null)
-  switch_controller_dhcp_snooping_verify_mac = try(each.value.switch_controller_dhcp_snooping_verify_mac, null)
-  switch_controller_dhcp_snooping_option82   = try(each.value.switch_controller_dhcp_snooping_option82, null)
-  switch_controller_arp_inspection           = try(each.value.switch_controller_arp_inspection, null)
-  switch_controller_learning_limit           = try(each.value.switch_controller_learning_limit, null)
-  switch_controller_nac                      = try(each.value.switch_controller_nac, null)
-  switch_controller_dynamic                  = try(each.value.switch_controller_dynamic, null)
-  switch_controller_feature                  = try(each.value.switch_controller_feature, null)
-  switch_controller_iot_scanning             = try(each.value.switch_controller_iot_scanning, null)
-  switch_controller_offload                  = try(each.value.switch_controller_offload, null)
-  switch_controller_offload_ip               = try(each.value.switch_controller_offload_ip, null)
-  switch_controller_offload_gw               = try(each.value.switch_controller_offload_gw, null)
-  swc_vlan                                   = try(each.value.swc_vlan, null)
-  swc_first_create                           = try(each.value.swc_first_create, null)
-  color                                      = try(each.value.color, null)
-  eap_supplicant                             = try(each.value.eap_supplicant, null)
-  eap_method                                 = try(each.value.eap_method, null)
-  eap_identity                               = try(each.value.eap_identity, null)
-  eap_password                               = try(each.value.eap_password, null)
-  eap_ca_cert                                = try(each.value.eap_ca_cert, null)
-  eap_user_cert                              = try(each.value.eap_user_cert, null)
-  default_purdue_level                       = try(each.value.default_purdue_level, null)
-  forward_error_correction                   = try(each.value.forward_error_correction, null)
-  autogenerated                              = try(each.value.autogenerated, null)
-  dynamic_sort_subtable                      = try(each.value.dynamic_sort_subtable, null)
-  get_all_tables                             = try(each.value.get_all_tables, null)
+  dedicated_to                               = each.value.dedicated_to
+  trust_ip_1                                 = each.value.trust_ip_1
+  trust_ip_2                                 = each.value.trust_ip_2
+  trust_ip_3                                 = each.value.trust_ip_3
+  trust_ip6_1                                = each.value.trust_ip6_1
+  trust_ip6_2                                = each.value.trust_ip6_2
+  trust_ip6_3                                = each.value.trust_ip6_3
+  mtu_override                               = each.value.mtu_override
+  mtu                                        = each.value.mtu
+  ring_rx                                    = each.value.ring_rx
+  ring_tx                                    = each.value.ring_tx
+  wccp                                       = each.value.wccp
+  netflow_sampler                            = each.value.netflow_sampler
+  netflow_sample_rate                        = each.value.netflow_sample_rate
+  netflow_sampler_id                         = each.value.netflow_sampler_id
+  sflow_sampler                              = each.value.sflow_sampler
+  drop_overlapped_fragment                   = each.value.drop_overlapped_fragment
+  drop_fragment                              = each.value.drop_fragment
+  scan_botnet_connections                    = each.value.scan_botnet_connections
+  src_check                                  = each.value.src_check
+  sample_rate                                = each.value.sample_rate
+  polling_interval                           = each.value.polling_interval
+  sample_direction                           = each.value.sample_direction
+  explicit_web_proxy                         = each.value.explicit_web_proxy
+  explicit_ftp_proxy                         = each.value.explicit_ftp_proxy
+  proxy_captive_portal                       = each.value.proxy_captive_portal
+  tcp_mss                                    = each.value.tcp_mss
+  mediatype                                  = each.value.mediatype
+  inbandwidth                                = each.value.inbandwidth
+  outbandwidth                               = each.value.outbandwidth
+  egress_shaping_profile                     = each.value.egress_shaping_profile
+  ingress_shaping_profile                    = each.value.ingress_shaping_profile
+  disconnect_threshold                       = each.value.disconnect_threshold
+  spillover_threshold                        = each.value.spillover_threshold
+  ingress_spillover_threshold                = each.value.ingress_spillover_threshold
+  weight                                     = each.value.weight
+  interface                                  = each.value.interface
+  external                                   = each.value.external
+  vlan_protocol                              = each.value.vlan_protocol
+  vlanid                                     = each.value.vlanid
+  trunk                                      = each.value.trunk
+  forward_domain                             = each.value.forward_domain
+  remote_ip                                  = each.value.remote_ip
+  lacp_mode                                  = each.value.lacp_mode
+  lacp_ha_secondary                          = each.value.lacp_ha_secondary
+  lacp_ha_slave                              = each.value.lacp_ha_slave
+  system_id_type                             = each.value.system_id_type
+  system_id                                  = each.value.system_id
+  lacp_speed                                 = each.value.lacp_speed
+  min_links                                  = each.value.min_links
+  min_links_down                             = each.value.min_links_down
+  algorithm                                  = each.value.algorithm
+  link_up_delay                              = each.value.link_up_delay
+  aggregate_type                             = each.value.aggregate_type
+  priority_override                          = each.value.priority_override
+  aggregate                                  = each.value.aggregate
+  redundant_interface                        = each.value.redundant_interface
+  devindex                                   = each.value.devindex
+  vindex                                     = each.value.vindex
+  switch                                     = each.value.switch
+  description                                = each.value.description
+  alias                                      = each.value.alias
+  security_mode                              = each.value.security_mode
+  captive_portal                             = each.value.captive_portal
+  security_mac_auth_bypass                   = each.value.security_mac_auth_bypass
+  security_ip_auth_bypass                    = each.value.security_ip_auth_bypass
+  security_external_web                      = each.value.security_external_web
+  security_external_logout                   = each.value.security_external_logout
+  replacemsg_override_group                  = each.value.replacemsg_override_group
+  security_redirect_url                      = each.value.security_redirect_url
+  auth_cert                                  = each.value.auth_cert
+  auth_portal_addr                           = each.value.auth_portal_addr
+  security_exempt_list                       = each.value.security_exempt_list
+  ike_saml_server                            = each.value.ike_saml_server
+  stp                                        = each.value.stp
+  stp_ha_secondary                           = each.value.stp_ha_secondary
+  device_identification                      = each.value.device_identification
+  exclude_signatures                         = each.value.exclude_signatures
+  device_user_identification                 = each.value.device_user_identification
+  device_identification_active_scan          = each.value.device_identification_active_scan
+  device_access_list                         = each.value.device_access_list
+  device_netscan                             = each.value.device_netscan
+  lldp_reception                             = each.value.lldp_reception
+  lldp_transmission                          = each.value.lldp_transmission
+  lldp_network_policy                        = each.value.lldp_network_policy
+  fortiheartbeat                             = each.value.fortiheartbeat
+  broadcast_forticlient_discovery            = each.value.broadcast_forticlient_discovery
+  endpoint_compliance                        = each.value.endpoint_compliance
+  estimated_upstream_bandwidth               = each.value.estimated_upstream_bandwidth
+  estimated_downstream_bandwidth             = each.value.estimated_downstream_bandwidth
+  measured_upstream_bandwidth                = each.value.measured_upstream_bandwidth
+  measured_downstream_bandwidth              = each.value.measured_downstream_bandwidth
+  bandwidth_measure_time                     = each.value.bandwidth_measure_time
+  monitor_bandwidth                          = each.value.monitor_bandwidth
+  vrrp_virtual_mac                           = each.value.vrrp_virtual_mac
+  role                                       = each.value.role
+  snmp_index                                 = each.value.snmp_index
+  secondary_ip                               = each.value.secondary_ip
+  preserve_session_route                     = each.value.preserve_session_route
+  auto_auth_extension_device                 = each.value.auto_auth_extension_device
+  ap_discover                                = each.value.ap_discover
+  fortilink_stacking                         = each.value.fortilink_stacking
+  fortilink_neighbor_detect                  = each.value.fortilink_neighbor_detect
+  ip_managed_by_fortiipam                    = each.value.ip_managed_by_fortiipam
+  managed_subnetwork_size                    = each.value.managed_subnetwork_size
+  fortilink_split_interface                  = each.value.fortilink_split_interface
+  internal                                   = each.value.internal
+  fortilink_backup_link                      = each.value.fortilink_backup_link
+  switch_controller_access_vlan              = each.value.switch_controller_access_vlan
+  switch_controller_traffic_policy           = each.value.switch_controller_traffic_policy
+  switch_controller_rspan_mode               = each.value.switch_controller_rspan_mode
+  switch_controller_netflow_collect          = each.value.switch_controller_netflow_collect
+  switch_controller_mgmt_vlan                = each.value.switch_controller_mgmt_vlan
+  switch_controller_igmp_snooping            = each.value.switch_controller_igmp_snooping
+  switch_controller_igmp_snooping_proxy      = each.value.switch_controller_igmp_snooping_proxy
+  switch_controller_igmp_snooping_fast_leave = each.value.switch_controller_igmp_snooping_fast_leave
+  switch_controller_dhcp_snooping            = each.value.switch_controller_dhcp_snooping
+  switch_controller_dhcp_snooping_verify_mac = each.value.switch_controller_dhcp_snooping_verify_mac
+  switch_controller_dhcp_snooping_option82   = each.value.switch_controller_dhcp_snooping_option82
+  switch_controller_arp_inspection           = each.value.switch_controller_arp_inspection
+  switch_controller_learning_limit           = each.value.switch_controller_learning_limit
+  switch_controller_nac                      = each.value.switch_controller_nac
+  switch_controller_dynamic                  = each.value.switch_controller_dynamic
+  switch_controller_feature                  = each.value.switch_controller_feature
+  switch_controller_iot_scanning             = each.value.switch_controller_iot_scanning
+  switch_controller_offload                  = each.value.switch_controller_offload
+  switch_controller_offload_ip               = each.value.switch_controller_offload_ip
+  switch_controller_offload_gw               = each.value.switch_controller_offload_gw
+  swc_first_create                           = each.value.swc_first_create
+  color                                      = each.value.color
+  eap_supplicant                             = each.value.eap_supplicant
+  eap_method                                 = each.value.eap_method
+  eap_identity                               = each.value.eap_identity
+  eap_password                               = each.value.eap_password
+  eap_ca_cert                                = each.value.eap_ca_cert
+  eap_user_cert                              = each.value.eap_user_cert
+  default_purdue_level                       = each.value.default_purdue_level
+  forward_error_correction                   = each.value.forward_error_correction
+  autogenerated                              = each.value.autogenerated
+  dynamic_sort_subtable                      = each.value.dynamic_sort_subtable
+  get_all_tables                             = each.value.get_all_tables
 
 
   dynamic "client_options" {
-    for_each = { for option in try(each.value.client_options, []) : option.code => option }
+    for_each = [for option in each.value.client_options : option]
     content {
-      id    = try(client_options.value.id, null)
-      code  = try(lient_options.value.code, null)
-      type  = try(client_options.value.type, null)
-      value = try(client_options.value.value, null)
-      ip    = try(client_options.value.ip, null)
+      id    = client_options.value.id
+      code  = lient_options.value.code
+      type  = client_options.value.type
+      value = client_options.value.value
+      ip    = client_options.value.ip
     }
   }
 
   dynamic "fail_alert_interfaces" {
-    for_each = { for interface in try(each.value.fail_alert_interfaces, []) : interface => interface }
+    for_each = [for interface in each.value.fail_alert_interfaces : interface]
     content {
       name = fail_alert_interfaces.value
     }
   }
 
   dynamic "member" {
-    for_each = { for member in try(each.value.members, []) : member => member }
+    for_each = [for member in each.value.member : member]
     content {
       interface_name = member.value
     }
   }
 
   dynamic "managed_device" {
-    for_each = { for device in try(each.value.managed_devices, []) : device => device }
+    for_each = [for device in each.value.managed_device : device]
     content {
       name = managed_device.value
     }
   }
 
   dynamic "security_groups" {
-    for_each = { for group in try(each.value.security_groups, []) : group => group }
+    for_each = [for group in each.value.security_groups : group]
     content {
       name = security_groups.value
     }
   }
 
   dynamic "vrrp" {
-    for_each = { for vrrp in try(each.value.vrrp, []) : vrrp.vrid => vrrp }
+    for_each = [for vrrp in each.value.vrrp : vrrp]
     content {
-      vrid                 = try(vrrp.value.vrid, null)
-      version              = try(vrrp.value.version, null)
-      vrgrp                = try(vrrp.value.vrgrp, null)
-      vrip                 = try(vrrp.value.vrip, null)
-      priority             = try(vrrp.value.priority, null)
-      adv_interval         = try(vrrp.value.adv_interval, null)
-      start_time           = try(vrrp.value.start_time, null)
-      preempt              = try(vrrp.value.preempt, null)
-      accept_mode          = try(vrrp.value.accept_mode, null)
-      vrdst                = try(vrrp.value.vrdst, null)
-      vrdst_priority       = try(vrrp.value.vrdst_priority, null)
-      ignore_default_route = try(vrrp.value.ignore_default_route, null)
-      status               = try(vrrp.value.status, null)
+      vrid                 = vrrp.value.vrid
+      version              = vrrp.value.version
+      vrgrp                = vrrp.value.vrgrp
+      vrip                 = vrrp.value.vrip
+      priority             = vrrp.value.priority
+      adv_interval         = vrrp.value.adv_interval
+      start_time           = vrrp.value.start_time
+      preempt              = vrrp.value.preempt
+      accept_mode          = vrrp.value.accept_mode
+      vrdst                = vrrp.value.vrdst
+      vrdst_priority       = vrrp.value.vrdst_priority
+      ignore_default_route = vrrp.value.ignore_default_route
+      status               = vrrp.value.status
       dynamic "proxy_arp" {
-        for_each = { for proxy_arp in try(vrrp.value.proxy_arps, []) : proxy_arp => proxy_arp }
+        for_each = [for proxy_arp in vrrp.value.proxy_arps : proxy_arp]
         content {
-          ip = proxy_arp.value
+          id = proxy_arp.value.id
+          ip = proxy_arp.value.ip
         }
       }
     }
   }
 
   dynamic "phy_setting" {
-    for_each = { for setting in try(each.value.phy_settings, []) : setting => setting }
+    for_each = each.value.phy_setting != null ? [each.value.phy_setting] : []
     content {
-      signal_ok_threshold_value = phy_setting.value
+      signal_ok_threshold       = phy_setting.value.signal_ok_threshold
+      signal_ok_threshold_value = phy_setting.value.signal_ok_threshold_value
     }
   }
 
   dynamic "secondaryip" {
-    for_each = { for secip in try(each.value.secondaryip, []) : secip.ip => secip }
+    for_each = [for secip in each.value.secondaryip : secip]
     content {
       ip               = secondaryip.value.ip
-      id               = try(secondaryip.value.id, null)
-      secip_relay_ip   = try(secondaryip.value.secip_relay_ip, null)
-      allowaccess      = join(" ", try(secondaryip.value.allowaccess, try(each.value.role, null) == "wan" ? [] : ["ping"]))
-      gwdetect         = try(secondaryip.value.gwdetect, null)
-      ping_serv_status = try(secondaryip.value.ping_serv_status, null)
-      detectserver     = try(secondaryip.value.detectserver, null)
-      detectprotocol   = try(secondaryip.value.detectprotocol, null)
-      ha_priority      = try(secondaryip.value.ha_priority, null)
+      id               = secondaryip.value.id
+      secip_relay_ip   = secondaryip.value.secip_relay_ip
+      allowaccess      = secondaryip.value.allowaccess
+      gwdetect         = secondaryip.value.gwdetect
+      ping_serv_status = secondaryip.value.ping_serv_status
+      detectserver     = secondaryip.value.detectserver
+      detectprotocol   = secondaryip.value.detectprotocol
+      ha_priority      = secondaryip.value.ha_priority
     }
   }
 
   dynamic "dhcp_snooping_server_list" {
-    for_each = { for snoop in try(each.value.dhcp_snooping_server_list, []) : snoop.name => snoop }
+    for_each = [for snoop in each.value.dhcp_snooping_server_list : snoop]
     content {
-      name      = try(snoop.value.name, null)
-      server_ip = try(snoop.value.server_ip, null)
+      name      = snoop.value.name
+      server_ip = snoop.value.server_ip
     }
   }
 
   dynamic "tagging" {
-    for_each = { for tag in try(each.value.tagging, []) : tag.name => tag }
+    for_each = [for tag in each.value.tagging : tag]
     content {
       name     = tagging.value.name
-      category = try(tagging.value.category, null)
+      category = tagging.value.category
       dynamic "tags" {
-        for_each = { for tag in try(tagging.value.tags, []) : tag => tag }
+        for_each = [for tag in tagging.value.tags : tag]
         content {
           name = tags.value
         }
@@ -365,183 +360,193 @@ resource "fortios_system_interface" "interfaces" {
     }
   }
 
-  ipv6 {
-    ip6_mode                     = try(each.value.ipv6.ip6_mode, null)
-    nd_mode                      = try(each.value.ipv6.nd_mode, null)
-    nd_cert                      = try(each.value.ipv6.nd_cert, null)
-    nd_security_level            = try(each.value.ipv6.nd_security_level, null)
-    nd_timestamp_delta           = try(each.value.ipv6.nd_timestamp_delta, null)
-    nd_timestamp_fuzz            = try(each.value.ipv6.nd_timestamp_fuzz, null)
-    nd_cga_modifier              = try(each.value.ipv6.nd_cga_modifier, null)
-    ip6_dns_server_override      = try(each.value.ipv6.ip6_dns_server_override, null)
-    ip6_address                  = try(each.value.ipv6.ip6_address, null)
-    ip6_allowaccess              = join(" ", try(each.value.ipv6.ip6_allowaccess, try(each.value.role, null) == "wan" ? [] : ["ping"]))
-    ip6_send_adv                 = try(each.value.ipv6.ip6_send_adv, null)
-    icmp6_send_redirect          = try(each.value.ipv6.icmp6_send_redirect, null)
-    ip6_manage_flag              = try(each.value.ipv6.ip6_manage_flag, null)
-    ip6_other_flag               = try(each.value.ipv6.ip6_other_flag, null)
-    ip6_max_interval             = try(each.value.ipv6.ip6_max_interval, null)
-    ip6_min_interval             = try(each.value.ipv6.ip6_min_interval, null)
-    ip6_link_mtu                 = try(each.value.ipv6.ip6_link_mtu, null)
-    ra_send_mtu                  = try(each.value.ipv6.ra_send_mtu, null)
-    ip6_reachable_time           = try(each.value.ipv6.ip6_reachable_time, null)
-    ip6_retrans_time             = try(each.value.ipv6.ip6_retrans_time, null)
-    ip6_default_life             = try(each.value.ipv6.ip6_default_life, null)
-    ip6_hop_limit                = try(each.value.ipv6.ip6_hop_limit, null)
-    ip6_adv_rio                  = try(each.value.ipv6.ip6_adv_rio, null)
-    ip6_route_pref               = try(each.value.ipv6.ip6_route_pref, null)
-    autoconf                     = try(each.value.ipv6.autoconf, null)
-    unique_autoconf_addr         = try(each.value.ipv6.unique_autoconf_addr, null)
-    interface_identifier         = try(each.value.ipv6.interface_identifier, null)
-    ip6_prefix_mode              = try(each.value.ipv6.ip6_prefix_mode, null)
-    ip6_upstream_interface       = try(each.value.ipv6.ip6_upstream_interface, null)
-    ip6_delegated_prefix_iaid    = try(each.value.ipv6.ip6_delegated_prefix_iaid, null)
-    ip6_subnet                   = try(each.value.ipv6.ip6_subnet, null)
-    dhcp6_relay_service          = try(each.value.ipv6.dhcp6_relay_service, null)
-    dhcp6_relay_type             = try(each.value.ipv6.dhcp6_relay_type, null)
-    dhcp6_relay_source_interface = try(each.value.ipv6.dhcp6_relay_source_interface, null)
-    dhcp6_relay_ip               = try(each.value.ipv6.dhcp6_relay_ip, null)
-    dhcp6_relay_source_ip        = try(each.value.ipv6.dhcp6_relay_source_ip, null)
-    dhcp6_relay_interface_id     = try(each.value.ipv6.dhcp6_relay_interface_id, null)
-    dhcp6_client_options         = try(each.value.ipv6.dhcp6_client_options, null)
-    dhcp6_prefix_delegation      = try(each.value.dhcp6_prefix_delegation, false) ? "enable" : "disable"
-    dhcp6_information_request    = try(each.value.ipv6.dhcp6_information_request, null)
-    dhcp6_prefix_hint            = try(each.value.ipv6.dhcp6_prefix_hint, null)
-    dhcp6_prefix_hint_plt        = try(each.value.ipv6.dhcp6_prefix_hint_plt, null)
-    dhcp6_prefix_hint_vlt        = try(each.value.ipv6.dhcp6_prefix_hint_vlt, null)
-    cli_conn6_status             = try(each.value.ipv6.cli_conn6_status, null)
-    vrrp_virtual_mac6            = try(each.value.ipv6.vrrp_virtual_mac6, null)
-    vrip6_link_local             = try(each.value.ipv6.vrip6_link_local, null)
+  dynamic "ipv6" {
+    for_each = each.value.ipv6 != null ? [each.value.ipv6] : []
+    content {
+      ip6_mode                     = ipv6.value.ip6_mode
+      nd_mode                      = ipv6.value.nd_mode
+      nd_cert                      = ipv6.value.nd_cert
+      nd_security_level            = ipv6.value.nd_security_level
+      nd_timestamp_delta           = ipv6.value.nd_timestamp_delta
+      nd_timestamp_fuzz            = ipv6.value.nd_timestamp_fuzz
+      nd_cga_modifier              = ipv6.value.nd_cga_modifier
+      ip6_dns_server_override      = ipv6.value.ip6_dns_server_override
+      ip6_address                  = ipv6.value.ip6_address
+      ip6_allowaccess              = ipv6.value.ip6_allowaccess
+      ip6_send_adv                 = ipv6.value.ip6_send_adv
+      icmp6_send_redirect          = ipv6.value.icmp6_send_redirect
+      ip6_manage_flag              = ipv6.value.ip6_manage_flag
+      ip6_other_flag               = ipv6.value.ip6_other_flag
+      ip6_max_interval             = ipv6.value.ip6_max_interval
+      ip6_min_interval             = ipv6.value.ip6_min_interval
+      ip6_link_mtu                 = ipv6.value.ip6_link_mtu
+      ra_send_mtu                  = ipv6.value.ra_send_mtu
+      ip6_reachable_time           = ipv6.value.ip6_reachable_time
+      ip6_retrans_time             = ipv6.value.ip6_retrans_time
+      ip6_default_life             = ipv6.value.ip6_default_life
+      ip6_hop_limit                = ipv6.value.ip6_hop_limit
+      ip6_adv_rio                  = ipv6.value.ip6_adv_rio
+      ip6_route_pref               = ipv6.value.ip6_route_pref
+      autoconf                     = ipv6.value.autoconf
+      unique_autoconf_addr         = ipv6.value.unique_autoconf_addr
+      interface_identifier         = ipv6.value.interface_identifier
+      ip6_prefix_mode              = ipv6.value.ip6_prefix_mode
+      ip6_upstream_interface       = ipv6.value.ip6_upstream_interface
+      ip6_delegated_prefix_iaid    = ipv6.value.ip6_delegated_prefix_iaid
+      ip6_subnet                   = ipv6.value.ip6_subnet
+      dhcp6_relay_service          = ipv6.value.dhcp6_relay_service
+      dhcp6_relay_type             = ipv6.value.dhcp6_relay_type
+      dhcp6_relay_source_interface = ipv6.value.dhcp6_relay_source_interface
+      dhcp6_relay_ip               = ipv6.value.dhcp6_relay_ip
+      dhcp6_relay_source_ip        = ipv6.value.dhcp6_relay_source_ip
+      dhcp6_relay_interface_id     = ipv6.value.dhcp6_relay_interface_id
+      dhcp6_client_options         = ipv6.value.dhcp6_client_options
+      dhcp6_prefix_delegation      = ipv6.value.dhcp6_prefix_delegation
+      dhcp6_information_request    = ipv6.value.dhcp6_information_request
+      dhcp6_prefix_hint            = ipv6.value.dhcp6_prefix_hint
+      dhcp6_prefix_hint_plt        = ipv6.value.dhcp6_prefix_hint_plt
+      dhcp6_prefix_hint_vlt        = ipv6.value.dhcp6_prefix_hint_vlt
+      vrrp_virtual_mac6            = ipv6.value.vrrp_virtual_mac6
+      vrip6_link_local             = ipv6.value.vrip6_link_local
 
-    dynamic "client_options" {
-      for_each = { for option in try(each.value.ipv6.client_options, []) : option.code => option }
-      content {
-        id    = try(client_options.value.id, null)
-        code  = try(lient_options.value.code, null)
-        type  = try(client_options.value.type, null)
-        value = try(client_options.value.value, null)
-        ip6   = try(client_options.value.ip6, null)
+      dynamic "client_options" {
+        for_each = [for option in ipv6.value.client_options : option]
+        content {
+          id    = client_options.value.id
+          code  = lient_options.value.code
+          type  = client_options.value.type
+          value = client_options.value.value
+          ip6   = client_options.value.ip6
+        }
       }
-    }
 
-    dynamic "ip6_extra_addr" {
-      for_each = { for addr in try(each.value.ipv6.ip6_extra_addr, []) : addr => addr }
-      content {
-        prefix = ip6_extra_addr.value
+      dynamic "ip6_extra_addr" {
+        for_each = [for addr in ipv6.value.ip6_extra_addr : addr]
+        content {
+          prefix = ip6_extra_addr.value
+        }
       }
-    }
 
-    dynamic "ip6_route_list" {
-      for_each = { for route in try(each.value.ipv6.ip6_route_list, []) : route.route => route }
-      content {
-        route           = ip6_route_list.value.route
-        route_pref      = try(ip6_route_list.value.route_pref, null)
-        route_life_time = try(ip6_route_list.value.route_life_time, null)
+      dynamic "ip6_route_list" {
+        for_each = [for route in ipv6.value.ip6_route_list : route]
+        content {
+          route           = ip6_route_list.value.route
+          route_pref      = ip6_route_list.value.route_pref
+          route_life_time = ip6_route_list.value.route_life_time
+        }
       }
-    }
 
-    dynamic "ip6_prefix_list" {
-      for_each = { for list in try(each.value.ipv6.ip6_prefix_list, []) : list.prefix => list }
-      content {
-        prefix              = try(ip6_prefix_list.value.prefix, null)
-        autonomous_flag     = try(ip6_prefix_list.value.autonomous_flag, null)
-        onlink_flag         = try(ip6_prefix_list.value.onlink_flag, null)
-        valid_life_time     = try(ip6_prefix_list.value.valid_life_time, null)
-        preferred_life_time = try(ip6_prefix_list.value.preferred_life_time, null)
-        rdnss               = try(ip6_prefix_list.value.rdnss, null)
-        dynamic "dnssl" {
-          for_each = { for suffix in try(ip6_prefix_list.dnssl, []) : suffix => suffix }
-          content {
-            domain = dnssl.value
+      dynamic "ip6_prefix_list" {
+        for_each = [for prefix_list in ipv6.value.ip6_prefix_list : prefix_list]
+        content {
+          prefix              = ip6_prefix_list.value.prefix
+          autonomous_flag     = ip6_prefix_list.value.autonomous_flag
+          onlink_flag         = ip6_prefix_list.value.onlink_flag
+          valid_life_time     = ip6_prefix_list.value.valid_life_time
+          preferred_life_time = ip6_prefix_list.value.preferred_life_time
+          rdnss               = ip6_prefix_list.value.rdnss
+          dynamic "dnssl" {
+            for_each = [for suffix in ip6_prefix_list.value.dnssl : suffix]
+            content {
+              domain = dnssl.value
+            }
           }
         }
       }
-    }
 
-    dynamic "ip6_rdnss_list" {
-      for_each = { for rdns in try(each.value.ipv6.ip6_rdnss_list, []) : rdns.rdnss => rdns }
-      content {
-        rdnss           = ip6_rdnss_list.value.rdnss
-        rdnss_life_time = try(ip6_rdnss_list.value.rdnss_life_time, null)
+      dynamic "ip6_rdnss_list" {
+        for_each = [for rdns in ipv6.value.ip6_rdnss_list : rdns.rdnss]
+        content {
+          rdnss           = ip6_rdnss_list.value.rdnss
+          rdnss_life_time = ip6_rdnss_list.value.rdnss_life_time
+        }
       }
-    }
 
-    dynamic "ip6_dnssl_list" {
-      for_each = { for dnssl in try(each.value.ipv6.ip6_dnssl_list, []) : dnssl.domain => dnssl }
-      content {
-        domain          = ip6_dnssl_list.value.domain
-        dnssl_life_time = try(ip6_dnssl_list.value.dnssl_life_time, null)
+      dynamic "ip6_dnssl_list" {
+        for_each = [for dnssl in ipv6.value.ip6_dnssl_list : dnssl]
+        content {
+          domain          = ip6_dnssl_list.value.domain
+          dnssl_life_time = ip6_dnssl_list.value.dnssl_life_time
+        }
       }
-    }
 
-    dynamic "ip6_delegated_prefix_list" {
-      for_each = { for prefix in try(each.value.ip6_delegated_prefix_list, []) : prefix.id => prefix }
-      content {
-        prefix_id             = ip6_delegated_prefix_list.value.id
-        upstream_interface    = ip6_delegated_prefix_list.value.upstream_interface
-        delegated_prefix_iaid = ip6_delegated_prefix_list.value.delegated_prefix_iaid
-        autonomous_flag       = try(ip6_delegated_prefix_list.value.autonomous_flag, null)
-        onlink_flag           = try(ip6_delegated_prefix_list.value.onlink_flag, null)
-        subnet                = ip6_delegated_prefix_list.value.subnet
-        rdnss                 = ip6_delegated_prefix_list.value.rdnss
-        rdnss_service         = try(ip6_delegated_prefix_list.value.rdnss_service, null)
+      dynamic "ip6_delegated_prefix_list" {
+        for_each = [for prefix in ipv6.value.ip6_delegated_prefix_list : prefix]
+        content {
+          prefix_id             = ip6_delegated_prefix_list.value.id
+          upstream_interface    = ip6_delegated_prefix_list.value.upstream_interface
+          delegated_prefix_iaid = ip6_delegated_prefix_list.value.delegated_prefix_iaid
+          autonomous_flag       = ip6_delegated_prefix_list.value.autonomous_flag
+          onlink_flag           = ip6_delegated_prefix_list.value.onlink_flag
+          subnet                = ip6_delegated_prefix_list.value.subnet
+          rdnss                 = ip6_delegated_prefix_list.value.rdnss
+          rdnss_service         = ip6_delegated_prefix_list.value.rdnss_service
+        }
       }
-    }
 
-    dynamic "dhcp6_iapd_list" {
-      for_each = { for iapd in try(each.value.dhcp6_iapd_list, []) : iapd.iaid => iapd }
-      content {
-        iaid            = dhcp6_iapd_list.value.iaid
-        prefix_hint     = dhcp6_iapd_list.value.prefix_hint
-        prefix_hint_plt = try(dhcp6_iapd_list.value.prefix_hint_plt, null)
-        prefix_hint_vlt = try(dhcp6_iapd_list.value.prefix_hint_vlt, null)
+      dynamic "dhcp6_iapd_list" {
+        for_each = [for iapd in ipv6.value.dhcp6_iapd_list : iapd]
+        content {
+          iaid            = dhcp6_iapd_list.value.iaid
+          prefix_hint     = dhcp6_iapd_list.value.prefix_hint
+          prefix_hint_plt = dhcp6_iapd_list.value.prefix_hint_plt
+          prefix_hint_vlt = dhcp6_iapd_list.value.prefix_hint_vlt
+        }
       }
-    }
 
-    dynamic "vrrp6" {
-      for_each = { for vrrp in try(each.value.ipv6.vrrp6, []) : vrrp.vrid => vrrp }
-      content {
-        vrid                 = vrrp6.value.vrid
-        vrgrp                = try(vrrp6.value.vrgrp, null)
-        vrip6                = try(vrrp6.value.vrip6, null)
-        priority             = try(vrrp6.value.priority, null)
-        adv_interval         = try(vrrp6.value.adv_interval, null)
-        start_time           = try(vrrp6.value.start_time, null)
-        preempt              = try(vrrp6.value.preempt, null)
-        accept_mode          = try(vrrp6.value.accept_mode, null)
-        vrdst6               = try(vrrp6.value.vrdst6, null)
-        vrdst_priority       = try(vrrp6.value.vrdst_priority, null)
-        ignore_default_route = try(vrrp6.value.ignore_default_route, null)
-        status               = try(vrrp6.value.status, null)
+      dynamic "vrrp6" {
+        for_each = [for vrrp in ipv6.value.vrrp6 : vrrp]
+        content {
+          vrid                 = vrrp6.value.vrid
+          vrgrp                = vrrp6.value.vrgrp
+          vrip6                = vrrp6.value.vrip6
+          priority             = vrrp6.value.priority
+          adv_interval         = vrrp6.value.adv_interval
+          start_time           = vrrp6.value.start_time
+          preempt              = vrrp6.value.preempt
+          accept_mode          = vrrp6.value.accept_mode
+          vrdst6               = vrrp6.value.vrdst6
+          vrdst_priority       = vrrp6.value.vrdst_priority
+          ignore_default_route = vrrp6.value.ignore_default_route
+          status               = vrrp6.value.status
+        }
       }
-    }
-  } # /ipv6
-
+    } # /dynamic
+  }   # /ipv6
 }
 
 resource "fortios_system_zone" "zones" {
-  for_each   = { for name, zone in try(local.interface_yaml.zones, []) : name => zone }
-  depends_on = [fortios_system_interface.interfaces, module.hardware_switch]
-  name       = each.key
-  intrazone  = try(each.value.intrazone, null)
-  vdomparam  = each.value.vdom
+  for_each              = { for zone in var.zones : zone.name => zone }
+  depends_on            = [fortios_system_interface.interfaces]
+  uuid                  = each.value.uuid
+  fabric_object         = each.value.fabric_object
+  fabric_force_sync     = each.value.fabric_force_sync
+  fabric_object_source  = each.value.fabric_object_source
+  name                  = each.value.name
+  description           = each.value.description
+  intrazone             = each.value.intrazone
+  dynamic_sort_subtable = each.value.dynamic_sort_subtable
+  get_all_tables        = each.value.get_all_tables
+  vdomparam             = each.value.vdomparam
+  update_if_exist       = each.value.update_if_exist
+
+  dynamic "tagging" {
+    for_each = [for tagging in each.value.tagging : tagging]
+    content {
+      name     = tagging.value.name
+      category = tagging.value.category
+      dynamic "tags" {
+        for_each = [for tag in tagging.value.tags : tag]
+        content {
+          name = tags.value
+        }
+      }
+    }
+  }
   dynamic "interface" {
-    for_each = { for interface in each.value.interfaces : interface => interface }
+    for_each = [for interface in each.value.interface : interface]
     content {
       interface_name = interface.value
     }
   }
-}
-
-module "hardware_switch" {
-  for_each     = { for name, switch in try(local.interface_yaml.switches, []) : name => switch }
-  source       = "github.com/sncs-uk/terraform-fortigate-hardware-switch?ref=v1.0.1"
-  name         = each.key
-  ports        = try(each.value.ports, null)
-  vdom         = try(each.value.vdom, null)
-  role         = try(each.value.role, null)
-  ipv4         = try(each.value.ipv4, null)
-  ipv6         = try(each.value.ipv6, null)
-  allowaccess  = join(" ", try(each.value.allowaccess, []))
-  allowaccess6 = join(" ", try(each.value.allowaccess, []))
 }
